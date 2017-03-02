@@ -6,6 +6,8 @@ requirejs.config({
         jquery:'lib/jquery/jquery',
         bootstarp:'lib/bootstrap/js/bootstrap.min',
         jquery_cookie:'lib/jquery-cookie/jquery.cookie',
+        datepicker:'lib/bootstrap-datepicker/js/bootstrap-datepicker.min',
+        datepickerLanguage:'lib/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min',
         // 自己写的路径配置
         userList: 'js/user/list',
         userProfile: 'js/user/profile',
@@ -29,12 +31,15 @@ requirejs.config({
         index:'js/index',
         template:'lib/artTemplate-3.0.1/template',
         nprogress:'lib/nprogress/nprogress',
-
+        util:'js/common/util',
 
     },
     shim:{
         bootstarp:{
             deps:['jquery']
+        },
+        datepickerLanguage:{
+            deps:['jquery','datepicker']
         }
     }
 });

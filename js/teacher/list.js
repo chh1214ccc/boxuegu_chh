@@ -1,14 +1,26 @@
 define(['jquery','nprogress','common','template'],function($,nprogress,undefined,template){
+    // è®²å¸ˆåˆ—è¡¨æ•°æ®ç¼“å­˜
+    var treacherListCache = null;
+    try{
+        treacherListCache = JSON.parse(localStorage.getItem('treacherListCache'))
+    }catch(e){
 
-    // äÖÈ¾½²Ê¦ÁĞ±í
-    $.get('/v6/teacher',function(data){
-        if(data.code == 200){
-            $('.table tbody').html(template('teacher-list-tpl',{list:data.result}));
-        }
-    });
-    //ÓÉÓÚÉÏÃæµÄÇëÇóÊı¾İäÖÈ¾ÊÇÒì²½½øĞĞµÄ£¬ËùÒÔÖ±½Ó¸øÉú³ÉµÄÔªËØÌí¼ÓÊÂ¼ş²»ÄÜµÃµ½ÔªËØ
-    //Ê¹ÓÃÊÂ¼şÎ¯ÍĞ(Ã°Åİ)£¬¸øÆä¸¸ÔªËØÌí¼ÓÊÂ¼ş´¦Àí³ÌĞò£¬µ«ÓÉ×ÓÔªËØ´¥·¢ÊÂ¼şÃ°Åİµ½¸¸¼¶ÔªËØ
-    //°Ñ'.teacher-view'Ìí¼ÓµÄÊÂ¼şÎ¯ÍĞµ½¸¸¼¶'.table tbody'ÉÏ
+    }
+    if(treacherListCache){
+        $('.table tbody').html(template('teacher-list-tpl',{list:treacherListCache}));
+    }else{
+        $.get('/v6/teacher',function(data){
+            if(data.code == 200){
+                localStorage.setItem('treacherListCache',JSON.stringify(data.result));
+                $('.table tbody').html(template('teacher-list-tpl',{list:data.result}));
+            }
+        });
+    }
+    // æ¸²æŸ“è®²å¸ˆåˆ—è¡¨
+
+    //ç”±äºä¸Šé¢çš„è¯·æ±‚æ•°æ®æ¸²æŸ“æ˜¯å¼‚æ­¥è¿›è¡Œçš„ï¼Œæ‰€ä»¥ç›´æ¥ç»™ç”Ÿæˆçš„å…ƒç´ æ·»åŠ äº‹ä»¶ä¸èƒ½å¾—åˆ°å…ƒç´ 
+    //ä½¿ç”¨äº‹ä»¶å§”æ‰˜(å†’æ³¡)ï¼Œç»™å…¶çˆ¶å…ƒç´ æ·»åŠ äº‹ä»¶å¤„ç†ç¨‹åºï¼Œä½†ç”±å­å…ƒç´ è§¦å‘äº‹ä»¶å†’æ³¡åˆ°çˆ¶çº§å…ƒç´ 
+    //æŠŠ'.teacher-view'æ·»åŠ çš„äº‹ä»¶å§”æ‰˜åˆ°çˆ¶çº§'.table tbody'ä¸Š
     $('.table tbody').on('click','.teacher-view',function(){
         $.get('/v6/teacher/view',{
             tc_id:$(this).parent().attr('data-id')
@@ -17,7 +29,25 @@ define(['jquery','nprogress','common','template'],function($,nprogress,undefined
                 $('#teacherModal').html(template('teacher-view-tpl',data.result));
             }
     })
+    });
+
+    // è®²å¸ˆçŠ¶æ€ä¿®æ”¹
+    $('.table tbody').on('click','.teacher-status',function(){
+        var $that = $(this);
+        $.ajax({
+            url:'/v6/teacher/handle',
+            type:'post',
+            data:{
+                tc_id:$(this).parent().attr('data-id'),
+                tc_status:$(this).parent().attr('data-status')
+            },
+            success:function(data){
+                $that.html(data.result.tc_status == 0?'å¼€å¯':'å…³é—­');
+                $that.parent().attr('data-status',data.result.tc_status);
+            }
+        })
     })
+
 
 
 
